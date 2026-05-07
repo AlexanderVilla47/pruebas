@@ -1,0 +1,133 @@
+
+# -------------------------------------------------
+# 2. CREAR APP EN PRODUCCIÓN (MAIN)
+# -------------------------------------------------
+
+echo "<h1>Producción</h1>" > index.html
+
+git add .
+git commit -m "chore: init app"
+
+git push -u origin main
+
+
+# -------------------------------------------------
+# 3. CREAR RAMA DEVELOP
+# -------------------------------------------------
+
+git checkout -b develop
+
+git push -u origin develop
+
+
+# -------------------------------------------------
+# 4. CREAR FEATURE DESDE DEVELOP
+# -------------------------------------------------
+
+git checkout -b feature/login develop
+
+
+# -------------------------------------------------
+# 5. MODIFICAR FEATURE
+# -------------------------------------------------
+
+echo "<h1>Producción + Login</h1>" > index.html
+
+git add .
+git commit -m "feat: add login"
+
+git push -u origin feature/login
+
+
+# -------------------------------------------------
+# 6. MOSTRAR QUE MAIN SIGUE IGUAL
+# -------------------------------------------------
+
+git checkout main
+
+cat index.html
+
+# Resultado esperado:
+# <h1>Producción</h1>
+
+
+# -------------------------------------------------
+# 7. MOSTRAR QUE FEATURE TIENE EL CAMBIO
+# -------------------------------------------------
+
+git checkout feature/login
+
+cat index.html
+
+# Resultado esperado:
+# <h1>Producción + Login</h1>
+
+
+# -------------------------------------------------
+# 8. MERGE FEATURE → DEVELOP
+# -------------------------------------------------
+
+git checkout develop
+
+git merge --no-ff feature/login -m "merge: feature/login into develop"
+
+git push
+
+
+# -------------------------------------------------
+# 9. CREAR RELEASE 1.0
+# -------------------------------------------------
+
+git checkout -b release/1.0 develop
+
+echo "1.0.0" > VERSION
+
+git add .
+git commit -m "chore: bump version 1.0.0"
+
+git push -u origin release/1.0
+
+
+# -------------------------------------------------
+# 10. RELEASE → MAIN
+# -------------------------------------------------
+
+git checkout main
+
+git merge --no-ff release/1.0 -m "release: v1.0"
+
+git tag -a v1.0 -m "Release 1.0"
+
+git push
+git push origin v1.0
+
+
+# -------------------------------------------------
+# 11. BACK-MERGE RELEASE → DEVELOP
+# -------------------------------------------------
+
+git checkout develop
+
+git merge --no-ff release/1.0 -m "back-merge: release/1.0"
+
+git push
+
+
+# -------------------------------------------------
+# 12. BORRAR RAMAS TEMPORALES
+# -------------------------------------------------
+
+# Local
+git branch -d feature/login
+git branch -d release/1.0
+
+# GitHub
+git push origin --delete feature/login
+git push origin --delete release/1.0
+
+
+# -------------------------------------------------
+# 13. VER GRAFO FINAL
+# -------------------------------------------------
+
+git log --oneline --graph --all --decorate
